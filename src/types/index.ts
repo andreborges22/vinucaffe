@@ -56,6 +56,22 @@ export type OrderStatus =
   | 'entregue'
   | 'cancelado'
 
+  // Status possíveis de um pedido
+export type OrderStatus =
+  | 'received'    // Recebido
+  | 'preparing'   // Preparando
+  | 'ready'       // Pronto
+  | 'delivered'   // Entregue
+
+// Etapa da timeline
+export interface OrderStep {
+  status: OrderStatus
+  label: string
+  description: string
+  emoji: string
+  estimatedMinutes: number
+}
+
 export type PaymentMethod = 'pix' | 'credito' | 'debito'
 export type PaymentStatus = 'aguardando' | 'aprovado' | 'recusado'
 

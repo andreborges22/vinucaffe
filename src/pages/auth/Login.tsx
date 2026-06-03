@@ -5,7 +5,7 @@ export default function Login() {
         
         <div className="text-center mb-8">
           <h1 className="font-display text-3xl text-brand-cafe font-bold">
-            Vinu Caffè
+            Vinucaffè
           </h1>
           <p className="text-brand-madeira text-sm mt-1">
             Entre para fazer seu pedido
