@@ -7,6 +7,7 @@ import Cart from '../pages/client/Cart'
 import Checkout from '../pages/client/Checkout'
 import OrderTracking  from '../pages/client/OrderTracking'
 import OrderConfirmed from '../pages/client/OrderConfirmed'
+import Review from '../pages/client/Review'
 import Dashboard from '../pages/admin/Dashboard'
 
 export default function AppRoutes() {
@@ -23,6 +24,7 @@ export default function AppRoutes() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/pedido-confirmado" element={<OrderConfirmed />} />
         <Route path="/acompanhamento" element={<OrderTracking />} />
+        <Route path="/avaliacao" element={<Review />} />
         <Route path="/admin" element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
