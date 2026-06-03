@@ -11,17 +11,18 @@ import OrderConfirmed from '../pages/client/OrderConfirmed'
 import OrderTracking  from '../pages/client/OrderTracking'
 import Review         from '../pages/client/Review'
 import Dashboard      from '../pages/admin/Dashboard'
+import OrderQueue     from '../pages/employee/OrderQueue'
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
         {/* Rotas públicas */}
-        <Route path="/"        element={<Navigate to="/login" />} />
-        <Route path="/login"   element={<Login />} />
+        <Route path="/"         element={<Navigate to="/login" />} />
+        <Route path="/login"    element={<Login />} />
         <Route path="/cadastro" element={<Register />} />
 
-        {/* Rotas do cliente — qualquer usuário logado */}
+        {/* Rotas do cliente */}
         <Route path="/cardapio" element={
           <PrivateRoute><Home /></PrivateRoute>
         } />
@@ -41,16 +42,16 @@ export default function AppRoutes() {
           <PrivateRoute><Review /></PrivateRoute>
         } />
 
-        {/* Rotas do admin — só perfil admin */}
-        <Route path="/admin" element={
-          <RoleRoute allowedRoles={['admin']}>
-            <Dashboard />
+        {/* Rota do funcionário ✅ */}
+        <Route path="/funcionario" element={
+          <RoleRoute allowedRoles={['employee', 'admin']}>
+            <OrderQueue />
           </RoleRoute>
         } />
 
-        {/* Rota do funcionário — será criada na próxima etapa */}
-        <Route path="/funcionario" element={
-          <RoleRoute allowedRoles={['employee', 'admin']}>
+        {/* Rota do admin */}
+        <Route path="/admin" element={
+          <RoleRoute allowedRoles={['admin']}>
             <Dashboard />
           </RoleRoute>
         } />

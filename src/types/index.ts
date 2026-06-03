@@ -1,7 +1,7 @@
 // ===========================
 // USUÁRIO
 // ===========================
-export type UserRole = 'cliente' | 'funcionario' | 'admin'
+export type UserRole = 'client' | 'employee' | 'admin'
 
 export interface User {
   id: string
@@ -49,21 +49,11 @@ export interface CartItem {
 // PEDIDO
 // ===========================
 export type OrderStatus =
-  | 'pendente'
-  | 'confirmado'
-  | 'preparando'
-  | 'pronto'
-  | 'entregue'
-  | 'cancelado'
+  | 'received'   // Recebido
+  | 'preparing'  // Preparando
+  | 'ready'      // Pronto
+  | 'delivered'  // Entregue
 
-  // Status possíveis de um pedido
-export type OrderStatus =
-  | 'received'    // Recebido
-  | 'preparing'   // Preparando
-  | 'ready'       // Pronto
-  | 'delivered'   // Entregue
-
-// Etapa da timeline
 export interface OrderStep {
   status: OrderStatus
   label: string
@@ -76,23 +66,19 @@ export type PaymentMethod = 'pix' | 'credito' | 'debito'
 export type PaymentStatus = 'aguardando' | 'aprovado' | 'recusado'
 
 export interface OrderItem {
-  id: string
-  product: Product
+  productName: string
   quantity: number
-  unitPrice: number
-  subtotal: number
-  notes?: string
+  price: number
 }
 
 export interface Order {
   id: string
-  userId: string
+  protocol: string
   tableNumber: string
-  items: OrderItem[]
   status: OrderStatus
+  items: OrderItem[]
   total: number
-  paymentMethod: PaymentMethod
-  paymentStatus: PaymentStatus
-  createdAt: string
-  updatedAt: string
+  paymentMethod?: PaymentMethod
+  paymentStatus?: PaymentStatus
+  createdAt: Date
 }
