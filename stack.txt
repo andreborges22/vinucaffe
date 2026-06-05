@@ -1,0 +1,11 @@
+asgiref==3.11.1
+Django==6.0.6
+django-cors-headers==4.9.0
+djangorestframework==3.17.1
+djangorestframework-camel-case @ git+https://github.com/vbabiy/djangorestframework-camel-case.git@54fc3951b44bb5846e69187402f49a95115710a4
+packaging==26.2
+python-decouple==3.8
+setuptools==82.0.1
+sqlparse==0.5.5
+tzdata==2026.2
+wheel==0.47.0
