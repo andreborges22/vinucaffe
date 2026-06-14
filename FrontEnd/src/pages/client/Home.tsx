@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCartStore } from '../../store/cart.store'
+import { useAuthStore } from '../../store/auth.store'
 import { Product } from '../../types'
 import ProductModal from '../../components/ProductModal'
 
-// ── Dados reais do cardápio ───────────────────────────────
 const categories = [
   { id: 'cafes',      label: 'Cafés' },
   { id: 'gelados',    label: 'Cafés Gelados' },
@@ -89,7 +89,6 @@ const products: Product[] = [
   { id: 67, name: 'Porção Extra de Queijo', description: 'Queijo extra',   price: 10.00, category: 'adicional' },
 ]
 
-// ── Componente Principal ──────────────────────────────────
 export default function Home() {
   const navigate = useNavigate()
   const [activeCategory, setActiveCategory] = useState('cafes')
@@ -97,6 +96,7 @@ export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
 
   const { addItem, totalItems, total } = useCartStore()
+  const { user, logout } = useAuthStore()
   const cartCount = totalItems()
   const cartTotal = total()
 
@@ -106,6 +106,11 @@ export default function Home() {
     return inCategory && (search === '' ? true : inSearch)
   })
 
+  function handleLogout() {
+    logout()
+    navigate('/login')
+  }
+
   return (
     <div className="min-h-screen bg-brand-offwhite pb-32">
 
@@ -114,12 +119,36 @@ export default function Home() {
         className="h-36 relative"
         style={{ background: 'linear-gradient(135deg, #2C1A0E 0%, #4A3728 50%, #B5651D 100%)' }}
       >
+        {/* Botão de usuário no canto superior direito do banner */}
+        <div className="absolute top-4 right-4 z-10">
+          {user ? (
+            <div className="flex items-center gap-2">
+              <span className="text-white/70 text-xs hidden sm:block">
+                Olá, {user.name.split(' ')[0]}!
+              </span>
+              <button
+                onClick={handleLogout}
+                className="bg-white/10 hover:bg-white/20 text-white text-xs font-medium px-3 py-1.5 rounded-full border border-white/20 transition-colors"
+              >
+                Sair
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => navigate('/login')}
+              className="bg-white/10 hover:bg-white/20 text-white text-xs font-medium px-3 py-1.5 rounded-full border border-white/20 transition-colors"
+            >
+              Entrar
+            </button>
+          )}
+        </div>
+
         <div className="absolute -right-6 -top-10 text-white/5 text-[160px] font-bold select-none leading-none">
           ✳
         </div>
       </div>
 
-      {/* ── CARTÃO DA LOJA (sobrepõe o banner) ── */}
+      {/* ── CARTÃO DA LOJA ── */}
       <div className="max-w-2xl mx-auto px-4 -mt-12 relative z-10">
         <div className="bg-white rounded-2xl shadow-md p-4 flex items-center gap-4 border border-brand-creme">
           <div
@@ -137,7 +166,7 @@ export default function Home() {
               ✳ Café · Negócios · Propósito
             </p>
             <div className="flex items-center gap-2 mt-1.5">
-              <span className="bg-brand-oliva/10 text-brand-oliva text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
+              <span className="bg-brand-oliva/10 text-brand-oliva text-xs font-semibold px-2 py-0.5 rounded-full">
                 ● Aberto agora
               </span>
             </div>
@@ -192,7 +221,6 @@ export default function Home() {
 
       {/* ── LISTA DE PRODUTOS ── */}
       <main className="max-w-2xl mx-auto px-4 py-4">
-
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-display text-brand-escuro text-2xl font-bold">
             {search !== ''
@@ -219,7 +247,6 @@ export default function Home() {
               onClick={() => setSelectedProduct(product)}
               className="bg-white rounded-2xl p-3 flex items-center gap-3 border border-brand-creme/80 shadow-sm hover:shadow-md transition-shadow cursor-pointer active:scale-[0.99]"
             >
-              {/* Imagem / placeholder */}
               <div
                 className="w-20 h-20 rounded-xl flex items-center justify-center flex-shrink-0 text-2xl"
                 style={{ background: 'linear-gradient(135deg, #F5F0E8, #EDE5D0)' }}
@@ -227,7 +254,6 @@ export default function Home() {
                 ☕
               </div>
 
-              {/* Info do produto */}
               <div className="flex-1 min-w-0">
                 <p className="text-brand-escuro font-semibold text-sm leading-snug">
                   {product.name}
@@ -240,7 +266,6 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* Botão adicionar — agora só visual, o card todo é clicável */}
               <div
                 className="w-10 h-10 text-white rounded-xl text-xl flex items-center justify-center flex-shrink-0 shadow-md"
                 style={{ background: 'linear-gradient(135deg, #B5651D, #4A3728)' }}
