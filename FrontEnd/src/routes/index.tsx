@@ -17,24 +17,24 @@ export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Rotas públicas */}
-        <Route path="/"         element={<Navigate to="/login" />} />
+        {/* Rota raiz → vai direto pro cardápio (QR Code da mesa) */}
+        <Route path="/" element={<Navigate to="/cardapio" />} />
+
+        {/* Autenticação */}
         <Route path="/login"    element={<Login />} />
         <Route path="/cadastro" element={<Register />} />
 
-        {/* Rotas do cliente */}
-        <Route path="/cardapio" element={
-          <PrivateRoute><Home /></PrivateRoute>
-        } />
-        <Route path="/carrinho" element={
-          <PrivateRoute><Cart /></PrivateRoute>
-        } />
-        <Route path="/checkout" element={
-          <PrivateRoute><Checkout /></PrivateRoute>
-        } />
-        <Route path="/pedido-confirmado" element={
-          <PrivateRoute><OrderConfirmed /></PrivateRoute>
-        } />
+        {/* ── Rotas PÚBLICAS do cliente ── */}
+        {/* Cliente navega, monta carrinho e vê checkout sem precisar logar */}
+        <Route path="/cardapio" element={<Home />} />
+        <Route path="/carrinho" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+
+        {/* Rotas que exigem login */}
+        {/* Confirmação básica — todo cliente recebe, c/ ou sem login */}
+        <Route path="/pedido-confirmado" element={<OrderConfirmed />} />
+
+        {/* Exclusivo de quem tem conta */}
         <Route path="/acompanhamento" element={
           <PrivateRoute><OrderTracking /></PrivateRoute>
         } />
@@ -42,7 +42,7 @@ export default function AppRoutes() {
           <PrivateRoute><Review /></PrivateRoute>
         } />
 
-        {/* Rota do funcionário ✅ */}
+        {/* Rota do funcionário */}
         <Route path="/funcionario" element={
           <RoleRoute allowedRoles={['employee', 'admin']}>
             <OrderQueue />

@@ -16,14 +16,15 @@ export interface User {
 // PRODUTO
 // ===========================
 export interface Product {
-  id: string
+  id: number
   name: string
   description: string
   price: number
-  imageUrl: string
-  categoryId: string
-  isAvailable: boolean
+  imageUrl?: string      // ← opcional (? adicionado)
+  categoryId?: string    // ← opcional (? adicionado)
+  isAvailable?: boolean  // ← opcional (? adicionado)
   allergens?: string[]
+  category: string
 }
 
 // ===========================
@@ -43,6 +44,7 @@ export interface Category {
 export interface CartItem {
   product: Product
   quantity: number
+  notes?: string
 }
 
 // ===========================
