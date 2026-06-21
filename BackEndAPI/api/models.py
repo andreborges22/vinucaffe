@@ -6,7 +6,8 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
-
+from django.utils import timezone
+from cloudinary.models import CloudinaryField
 
 class Avaliacao(models.Model):
     idavaliacao = models.AutoField(db_column='idAvaliacao', primary_key=True)  # Field name made lowercase.
@@ -26,6 +27,8 @@ class Cardapio(models.Model):
     descricao = models.TextField(db_column='Descricao')  # Field name made lowercase.
     status = models.SmallIntegerField(db_column='Status')  # Field name made lowercase.
     categoria = models.CharField(db_column='Categoria', max_length=45)  # Field name made lowercase.
+    imagem = models.CharField(max_length=255, blank=True, null=True)
+    
 
     class Meta:
         managed = True
@@ -47,7 +50,7 @@ class Cliente(models.Model):
 
 class Comanda(models.Model):
     idcomanda = models.AutoField(db_column='idComanda', primary_key=True)  # Field name made lowercase.
-    cardapio = models.ForeignKey(Cardapio, models.DO_NOTHING, db_column='Cardapio_id')  # Field name made lowercase.
+    cardapio_id = models.ForeignKey(Cardapio, models.DO_NOTHING, db_column='Cardapio_id')  # Field name made lowercase.
     pedido_idpedido = models.ForeignKey('Pedido', models.DO_NOTHING, db_column='Pedido_idPedido')  # Field name made lowercase.
     quantidade = models.IntegerField(db_column='Quantidade')  # Field name made lowercase.
     observacoes = models.CharField(db_column='Observacoes', max_length=50, blank=True, null=True)  # Field name made lowercase.
@@ -63,7 +66,7 @@ class Pedido(models.Model):
     status_pedido = models.CharField(db_column='Status_pedido', max_length=45)  # Field name made lowercase.
     preco_total = models.DecimalField(db_column='Preco_total', max_digits=10, decimal_places=2)  # Field name made lowercase.
     mesa = models.IntegerField(db_column='Mesa')  # Field name made lowercase.
-    horario_pedido = models.DateTimeField()
+    horario_pedido = models.DateTimeField(auto_now_add=True)
     id_cliente = models.ForeignKey(Cliente, models.DO_NOTHING, db_column='id_cliente', blank=True, null=True)
 
     class Meta:
