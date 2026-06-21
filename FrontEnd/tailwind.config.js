@@ -7,15 +7,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        brand: {
-          cafe:     "#3D2B1F",
-          madeira:  "#7A5C3A",
-          amber:    "#C4943A",
-          oliva:    "#6B7C3A",
-          creme:    "#F2E8D0",
-          offwhite: "#FAF6EE",
-        }
-      },
+  brand: {
+    marrom:   "#B5651D",  // cor "Vinu" no logo
+    oliva:    "#6B7C3A",  // cor asterisco e "caffè"
+    escuro:   "#4A3728",  // marrom escuro
+    creme:    "#F5F0E8",  // fundo claro/cardápios
+    offwhite: "#FAFAF8",  // fundo da aplicação
+    branco:   "#FFFFFF",
+  }
+},
       fontFamily: {
         display: ["Playfair Display", "serif"],
         sans:    ["Inter", "sans-serif"],

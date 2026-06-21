@@ -2,66 +2,65 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { CartItem, Product } from '../types'
 
-// 1. Define a forma do estado e as ações disponíveis
 interface CartStore {
   items: CartItem[]
-  addItem: (product: Product) => void
-  removeItem: (productId: string) => void
-  increaseQuantity: (productId: string) => void
-  decreaseQuantity: (productId: string) => void
+  addItem: (product: Product, quantity?: number, notes?: string) => void
+  removeItem: (productId: number, notes?: string) => void
+  increaseQuantity: (productId: number, notes?: string) => void
+  decreaseQuantity: (productId: number, notes?: string) => void
   clearCart: () => void
   total: () => number
   totalItems: () => number
 }
 
-// 2. Cria o store
+// Considera o mesmo item se tiver o mesmo produto E a mesma observação
+function sameItem(item: CartItem, productId: number, notes?: string) {
+  return item.product.id === productId && (item.notes || '') === (notes || '')
+}
+
 export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
 
-      // Adiciona produto ou aumenta quantidade se já existir
-      addItem: (product: Product) => {
-        const existing = get().items.find(i => i.product.id === product.id)
+      addItem: (product: Product, quantity = 1, notes = '') => {
+        const existing = get().items.find(i => sameItem(i, product.id, notes))
         if (existing) {
           set({
             items: get().items.map(i =>
-              i.product.id === product.id
-                ? { ...i, quantity: i.quantity + 1 }
+              sameItem(i, product.id, notes)
+                ? { ...i, quantity: i.quantity + quantity }
                 : i
             )
           })
         } else {
-          set({ items: [...get().items, { product, quantity: 1 }] })
+          set({ items: [...get().items, { product, quantity, notes }] })
         }
       },
 
-      // Remove o item completamente
-      removeItem: (productId: string) => {
-        set({ items: get().items.filter(i => i.product.id !== productId) })
+      removeItem: (productId: number, notes?: string) => {
+        set({ items: get().items.filter(i => !sameItem(i, productId, notes)) })
       },
 
-      // Aumenta quantidade
-      increaseQuantity: (productId: string) => {
+      increaseQuantity: (productId: number, notes?: string) => {
         set({
           items: get().items.map(i =>
-            i.product.id === productId
+            sameItem(i, productId, notes)
               ? { ...i, quantity: i.quantity + 1 }
               : i
           )
         })
       },
 
-      // Diminui quantidade — se chegar a 0, remove
-      decreaseQuantity: (productId: string) => {
-        const item = get().items.find(i => i.product.id === productId)
+      decreaseQuantity: (productId: number, notes?: string) => {
+        const item = get().items.find(i => sameItem(i, productId, notes))
         if (!item) return
         if (item.quantity === 1) {
-          get().removeItem(productId)
+          get().removeItem(productId, notes)
         } else {
           set({
             items: get().items.map(i =>
-              i.product.id === productId
+              sameItem(i, productId, notes)
                 ? { ...i, quantity: i.quantity - 1 }
                 : i
             )
@@ -69,23 +68,14 @@ export const useCartStore = create<CartStore>()(
         }
       },
 
-      // Limpa o carrinho (após finalizar pedido)
       clearCart: () => set({ items: [] }),
 
-      // Calcula o total em R$
       total: () =>
-        get().items.reduce(
-          (sum, i) => sum + i.product.price * i.quantity,
-          0
-        ),
+        get().items.reduce((sum, i) => sum + i.product.price * i.quantity, 0),
 
-      // Conta o número total de itens
       totalItems: () =>
         get().items.reduce((sum, i) => sum + i.quantity, 0),
     }),
-
-    // persist salva o carrinho no localStorage
-    // Se o usuário fechar o navegador e voltar, o carrinho continua lá
     { name: 'vinu-cart' }
   )
 )
