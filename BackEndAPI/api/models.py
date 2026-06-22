@@ -27,7 +27,7 @@ class Cardapio(models.Model):
     descricao = models.TextField(db_column='Descricao')  # Field name made lowercase.
     status = models.SmallIntegerField(db_column='Status')  # Field name made lowercase.
     categoria = models.CharField(db_column='Categoria', max_length=45)  # Field name made lowercase.
-    imagem = models.CharField(max_length=255, blank=True, null=True)
+    imagem = CloudinaryField('image', blank=True, null=True)
     
 
     class Meta:
@@ -50,7 +50,7 @@ class Cliente(models.Model):
 
 class Comanda(models.Model):
     idcomanda = models.AutoField(db_column='idComanda', primary_key=True)  # Field name made lowercase.
-    cardapio_id = models.ForeignKey(Cardapio, models.DO_NOTHING, db_column='Cardapio_id')  # Field name made lowercase.
+    cardapio = models.ForeignKey(Cardapio, models.DO_NOTHING, db_column='Cardapio_id')  # Field name made lowercase.
     pedido_idpedido = models.ForeignKey('Pedido', models.DO_NOTHING, db_column='Pedido_idPedido')  # Field name made lowercase.
     quantidade = models.IntegerField(db_column='Quantidade')  # Field name made lowercase.
     observacoes = models.CharField(db_column='Observacoes', max_length=50, blank=True, null=True)  # Field name made lowercase.

@@ -1,14 +1,21 @@
 from django.contrib import admin
 from . models import Cardapio, Avaliacao, Pedido, Cliente, Comanda
+from django.utils.html import format_html
 
 @admin.register(Cardapio)
 class CardapioAdmin(admin.ModelAdmin):
 
-    list_display = ['idcardapio', 'nome', 'preco', 'imagem', 'status', 'categoria']
+    list_display = ['idcardapio', 'nome', 'preco', 'imagem_preview', 'status', 'categoria']
     fields = ['nome', 'preco', 'imagem', 'status', 'categoria']
     list_filter = ['idcardapio', 'nome']
     search_fields = ['idcardapio', 'nome']
     list_per_page = 15
+
+    def imagem_preview(self, obj):
+        if obj.imagem:
+            return format_html('<img src="{}" style="height: 50px;" />', obj.imagem.url)
+        return "Sem imagem"
+    imagem_preview.short_description = 'Imagem'
 
 @admin.register(Pedido)
 class PedidoAdmin(admin.ModelAdmin):
