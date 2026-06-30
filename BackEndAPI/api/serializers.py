@@ -13,7 +13,7 @@ class CardapioClienteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cardapio
-        fields = ['nome', 'preco', 'descricao', 'categoria', 'imagem']
+        read_only_fields = ['nome', 'preco', 'descricao', 'categoria', 'imagem']
 
 class PedidoClienteSerializer(serializers.ModelSerializer):
     
