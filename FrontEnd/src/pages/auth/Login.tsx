@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuthStore } from '../../store/auth.store'
+import { loginCliente } from '../../services/authApi'
+import GoogleLoginButton from '../../components/GoogleLoginButton'
 
 const MOCK_USERS = [
-  { id: '1', name: 'Cliente Teste',     email: 'cliente@teste.com',     password: '123456', role: 'client'   as const, token: 'mock-token-client' },
   { id: '2', name: 'Funcionário Teste', email: 'funcionario@teste.com', password: '123456', role: 'employee' as const, token: 'mock-token-employee' },
   { id: '3', name: 'Admin Teste',       email: 'admin@teste.com',       password: '123456', role: 'admin'    as const, token: 'mock-token-admin' },
 ]
@@ -21,13 +22,29 @@ export default function Login() {
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [error, setError]       = useState('')
+  const [loading, setLoading]   = useState(false)
 
-  function handleLogin() {
+  async function handleLogin() {
     setError('')
-    const found = MOCK_USERS.find(u => u.email === email && u.password === password)
-    if (!found) { setError('E-mail ou senha incorretos'); return }
-    login({ id: found.id, name: found.name, email: found.email, role: found.role, token: found.token })
-    navigate(ROLE_REDIRECT[found.role])
+    setLoading(true)
+
+    try {
+      const user = await loginCliente(email, password)
+      login(user)
+      navigate(ROLE_REDIRECT[user.role])
+    } catch (err) {
+      const found = MOCK_USERS.find(u => u.email === email && u.password === password)
+
+      if (found) {
+        login({ id: found.id, name: found.name, email: found.email, role: found.role, token: found.token })
+        navigate(ROLE_REDIRECT[found.role])
+        return
+      }
+
+      setError(err instanceof Error ? err.message : 'E-mail ou senha incorretos')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -141,20 +158,28 @@ export default function Login() {
             {/* Botão */}
             <button
               onClick={handleLogin}
+              disabled={loading}
               className="w-full text-white py-4 rounded-2xl font-semibold text-sm transition-all active:scale-95 shadow-lg mt-2"
               style={{ background: 'linear-gradient(135deg, #B5651D, #4A3728)' }}
             >
-              Entrar
+              {loading ? 'Entrando...' : 'Entrar'}
             </button>
+
+            <div className="flex items-center gap-3 py-1">
+              <div className="h-px flex-1 bg-brand-creme" />
+              <span className="text-brand-escuro/35 text-xs uppercase tracking-wider">ou</span>
+              <div className="h-px flex-1 bg-brand-creme" />
+            </div>
+
+            <GoogleLoginButton onError={setError} />
 
             {/* Logins de teste */}
             <div
               className="rounded-2xl p-4 mt-1"
               style={{ background: 'linear-gradient(135deg, #F5F0E8, #EDE5D0)' }}
             >
-              <p className="text-brand-escuro text-xs font-semibold mb-2">🧪 Logins para teste</p>
+              <p className="text-brand-escuro text-xs font-semibold mb-2">🧪 Logins administrativos para teste</p>
               <div className="space-y-0.5">
-                <p className="text-brand-escuro/50 text-xs">cliente@teste.com → cardápio</p>
                 <p className="text-brand-escuro/50 text-xs">funcionario@teste.com → fila</p>
                 <p className="text-brand-escuro/50 text-xs">admin@teste.com → painel</p>
               </div>

@@ -1,24 +1,31 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuthStore } from '../../store/auth.store'
+import { registerCliente } from '../../services/authApi'
+import GoogleLoginButton from '../../components/GoogleLoginButton'
 
 export default function Register() {
   const navigate = useNavigate()
   const login = useAuthStore(state => state.login)
 
   const [name, setName]           = useState('')
+  const [phone, setPhone]         = useState('')
   const [email, setEmail]         = useState('')
   const [password, setPassword]   = useState('')
   const [confirm, setConfirm]     = useState('')
   const [error, setError]         = useState('')
   const [loading, setLoading]     = useState(false)
 
-  function handleRegister() {
+  async function handleRegister() {
     setError('')
 
     // Validações
     if (!name.trim()) {
       setError('Por favor, informe seu nome.')
+      return
+    }
+    if (!phone.trim()) {
+      setError('Por favor, informe seu celular.')
       return
     }
     if (!email.includes('@')) {
@@ -34,18 +41,22 @@ export default function Register() {
       return
     }
 
-    // Simula criação de conta (depois virá da API do Django)
     setLoading(true)
-    setTimeout(() => {
-      login({
-        id: Date.now().toString(),
+
+    try {
+      const user = await registerCliente({
         name: name.trim(),
+        phone: phone.trim(),
         email: email.trim(),
-        role: 'client',
-        token: 'mock-token-new-client',
+        password,
       })
+      login(user)
       navigate('/cardapio')
-    }, 1000)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Não foi possível criar sua conta.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -120,6 +131,19 @@ export default function Register() {
 
             <div>
               <label className="text-brand-escuro/70 text-xs font-semibold uppercase tracking-wider block mb-1.5">
+                Celular
+              </label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={e => setPhone(e.target.value)}
+                placeholder="(00) 00000-0000"
+                className="w-full border-2 border-brand-creme rounded-xl px-4 py-3 text-brand-escuro text-sm placeholder:text-brand-escuro/25 focus:outline-none focus:border-brand-marrom bg-white transition-colors"
+              />
+            </div>
+
+            <div>
+              <label className="text-brand-escuro/70 text-xs font-semibold uppercase tracking-wider block mb-1.5">
                 Senha
               </label>
               <input
@@ -162,6 +186,14 @@ export default function Register() {
             >
               {loading ? 'Criando conta...' : 'Criar conta'}
             </button>
+
+            <div className="flex items-center gap-3 py-1">
+              <div className="h-px flex-1 bg-brand-creme" />
+              <span className="text-brand-escuro/35 text-xs uppercase tracking-wider">ou</span>
+              <div className="h-px flex-1 bg-brand-creme" />
+            </div>
+
+            <GoogleLoginButton onError={setError} />
 
             {/* Benefícios */}
             <div
